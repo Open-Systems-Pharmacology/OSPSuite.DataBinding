@@ -26,3 +26,12 @@ build:
 test:
   assemblies:
     - OSPSuite.DataBinding.Tests.dll
+
+skip_commits:
+  files:
+    - '*.md'
+
+notifications:
+  - provider: Slack
+    incoming_webhook:      
+      secure: 4MH9Em6TtrKalq6808dhPOqypTfYBJvVlqPaa9akNyF1h7st5qNdNezFp6T+bWXqrcZ4q/smtPcJ7LkUFHL46JDYUFlIL8FDz+ApX/vP+x0=
