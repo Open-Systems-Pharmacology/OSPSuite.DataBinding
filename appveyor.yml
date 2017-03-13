@@ -15,10 +15,9 @@ cache:
   packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 
 before_build:
-  nuget restore
-
-nuget:
-  account_feed: true
+ - nuget sources add -name bddhelper -source https://ci.appveyor.com/nuget/ospsuite-bddhelper 
+ - nuget sources add -name utility -source https://ci.appveyor.com/nuget/ospsuite-utility 
+ - nuget restore
 
 build:
   publish_nuget: true
