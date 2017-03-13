@@ -1,0 +1,29 @@
+configuration: Debug
+
+environment:
+  app_version: '2.0.0'
+
+version: '%app_version%.{build}'
+
+assembly_info:
+  patch: true
+  file: SolutionInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"	
+
+cache:
+  packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
+
+before_build:
+  nuget restore
+
+nuget:
+  account_feed: true
+
+build:
+  publish_nuget: true
+  verbosity: minimal
+
+test:
+  assemblies:
+    - OSPSuite.DataBinding.Tests.dll
