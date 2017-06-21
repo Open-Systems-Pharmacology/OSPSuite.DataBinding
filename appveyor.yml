@@ -24,6 +24,16 @@ build:
   publish_nuget: true
   verbosity: minimal
 
+pull_requests: 
+  do_not_increment_build_number: true     
+
+nuget: 
+  disable_publish_on_pr: true  
+
+skip_branch_with_pr: true
+
+skip_tags: true
+
 test:
   assemblies:
     - OSPSuite.DataBinding.Tests.dll
