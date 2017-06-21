@@ -45,12 +45,12 @@ namespace OSPSuite.DataBinding
       void Update();
 
       /// <summary>
-      /// Event is raised when the value was changed in the element
+      /// Event is raised whenenver the value was changed, either in the element or if the source object itself
       /// </summary>
       event Action Changed;
 
       /// <summary>
-      /// Event is raised when the value is changing in the element
+      /// Event is raised when the value is changing in the element, typically via user input.
       /// </summary>
       event Action Changing;
 
@@ -104,11 +104,18 @@ namespace OSPSuite.DataBinding
       void SetValueToSource(TPropertyType value);
 
       /// <summary>
-      /// Event will be raised before writting a value in the source so that a caller
+      /// Event will be raised before writing the value to the source so that a caller
       /// can take over the action source.Property = value (e.g. for undo/redo actions or protocols).
-      /// The value will be set in the source from the control in any case to ensure a bi-directional binding 
+      /// The value will be set in the source from the control to ensure a bi-directional binding if using <see cref="BindingMode.TwoWay"/>.
       /// </summary>
-      event Action<TObject, PropertyValueSetEventArgs<TPropertyType>> OnValueSet;
+      event Action<TObject, PropertyValueSetEventArgs<TPropertyType>> OnValueUpdating;
+
+      /// <summary>
+      /// Event will be raised once the value was set in the source object 
+      /// The value will be set in the source from the control to ensure a bi-directional binding if using <see cref="BindingMode.TwoWay"/>.
+      /// </summary>
+      event Action<TObject, TPropertyType> OnValueUpdated;
+
 
       /// <summary>
       /// Formatter function used to display the value in a specific format

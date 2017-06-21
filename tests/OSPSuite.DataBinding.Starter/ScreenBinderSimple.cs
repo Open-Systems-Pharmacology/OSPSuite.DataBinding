@@ -28,14 +28,14 @@ namespace OSPSuite.DataBinding.Starter
       private void intializeBinding()
       {
          _screenBinder.Bind(item => item.FirstName).To(tbFirstName)
-                 .OnValueSet += onFirstNameSet;
+                 .OnValueUpdating += onFirstNameSet;
 
          _screenBinder.Bind(item => item.FirstName).To(tbAnotherFirstName)
-                 .OnValueSet += onFirstNameSet;
+                 .OnValueUpdating += onFirstNameSet;
 
          _screenBinder.Bind(item => item.ValueFromList).To(cbComboBox).WithValues(item => item.ListOfValues)
              .AndDisplays(item => item.ListOfDisplayValues)
-             .OnValueSet += onValueFromListSet;
+             .OnValueUpdating += onValueFromListSet;
 
          _screenBinder.Changed += () => addLine("Screen Binder received on change Value event");
 
