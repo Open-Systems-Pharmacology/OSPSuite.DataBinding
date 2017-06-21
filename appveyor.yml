@@ -34,6 +34,11 @@ skip_branch_with_pr: true
 
 skip_tags: true
 
+branches:
+  only:
+  - master
+  - develop
+
 test:
   assemblies:
     - OSPSuite.DataBinding.Tests.dll
