@@ -1,8 +1,8 @@
 using System;
 using System.Windows.Forms;
+using OSPSuite.DataBinding.Core;
 using OSPSuite.Utility.Extensions;
 using OSPSuite.Utility.Format;
-using OSPSuite.DataBinding.Core;
 
 namespace OSPSuite.DataBinding
 {
@@ -22,8 +22,8 @@ namespace OSPSuite.DataBinding
 
       public event Action Changed = delegate { };
       public event Action Changing = delegate { };
-
-      public event Action<TObjectType, PropertyValueSetEventArgs<TPropertyType>> OnValueSet = delegate { };
+      public event Action<TObjectType, PropertyValueSetEventArgs<TPropertyType>> OnValueUpdating = delegate { };
+      public event Action<TObjectType, TPropertyType> OnValueUpdated = delegate { };
 
       public ScreenBinder<TObjectType> ParentBinder { get; set; }
 
@@ -31,23 +31,23 @@ namespace OSPSuite.DataBinding
 
       public bool IsLatched { get; set; }
 
+      protected virtual IFormatter<TPropertyType> Formatter => FormatterConfigurator.FormatterFor(Source);
+
+      public string PropertyName => _propertyBinder.PropertyName;
+
       protected ElementBinder(IPropertyBinderNotifier<TObjectType, TPropertyType> propertyBinder)
          : this(propertyBinder, new ElementBinderValidator<TObjectType, TPropertyType>(), new FormatterConfigurator<TObjectType, TPropertyType>())
       {
       }
 
       protected ElementBinder(IPropertyBinderNotifier<TObjectType, TPropertyType> propertyBinder,
-                              IElementBinderValidator<TObjectType, TPropertyType> elementBinderValidator,
-                              IFormatterConfigurator<TObjectType, TPropertyType> formatterConfigurator)
+         IElementBinderValidator<TObjectType, TPropertyType> elementBinderValidator,
+         IFormatterConfigurator<TObjectType, TPropertyType> formatterConfigurator)
       {
          _propertyBinder = propertyBinder;
          _elementBinderValidator = elementBinderValidator;
          FormatterConfigurator = formatterConfigurator;
       }
-
-      protected virtual IFormatter<TPropertyType> Formatter => FormatterConfigurator.FormatterFor(Source);
-
-      public string PropertyName => _propertyBinder.PropertyName;
 
       public virtual void Bind(TObjectType source)
       {
@@ -96,25 +96,27 @@ namespace OSPSuite.DataBinding
 
          //before setting the value to the source, raise the on OnValueSet event 
          //to allow caller to take over the actual action of setting the value
-         OnValueSet(Source, new PropertyValueSetEventArgs<TPropertyType>(PropertyName, oldValue, newValue));
+         OnValueUpdating(Source, new PropertyValueSetEventArgs<TPropertyType>(PropertyName, oldValue, newValue));
 
-         if (ParentBinder.BindingMode == BindingMode.TwoWay)
-         {
-            //set control value into source
-            SetValueToSource(newValue);
-         }
+         if (ParentBinder.BindingMode == BindingMode.OneWay)
+            return;
+
+         //set control value into source
+         SetValueToSource(newValue);
+
+         OnValueUpdated(Source, newValue);
       }
 
       public virtual void Reset()
       {
          this.DoWithinLatch
-            (
-               () =>
-                  {
-                     updateControl(_originalValue);
-                     SetValueToSource(_originalValue);
-                  }
-            );
+         (
+            () =>
+            {
+               updateControl(_originalValue);
+               SetValueToSource(_originalValue);
+            }
+         );
       }
 
       public virtual void Update()
@@ -122,14 +124,14 @@ namespace OSPSuite.DataBinding
          ////Update control run within latch so that the function 
          ////is only called when indeed triggered from the element itself
          this.DoWithinLatch
-            (
-               () =>
-                  {
-                     //Update control with the current value of the source
-                     updateControl(GetValueFromSource());
-                     NotifyChange();
-                  }
-            );
+         (
+            () =>
+            {
+               //Update control with the current value of the source
+               updateControl(GetValueFromSource());
+               NotifyChange();
+            }
+         );
       }
 
       private void updateControl(TPropertyType valueToSetInControl)
@@ -155,6 +157,7 @@ namespace OSPSuite.DataBinding
 
       //these properties need to be implemented by each derived control
       public abstract Control Control { get; }
+
       public abstract TPropertyType GetValueFromControl();
       public abstract void SetValueToControl(TPropertyType value);
 
@@ -167,10 +170,10 @@ namespace OSPSuite.DataBinding
       protected void ValueInControlChanging()
       {
          this.DoWithinLatch(() =>
-            {
-               validateElement();
-               Changing();
-            });
+         {
+            validateElement();
+            Changing();
+         });
       }
 
       protected void ValueInControlChanged()
@@ -222,8 +225,10 @@ namespace OSPSuite.DataBinding
       protected virtual void Cleanup()
       {
          DeleteBinding();
+         Changing = delegate { };
          Changed = delegate { };
-         OnValueSet = delegate { };
+         OnValueUpdating = delegate { };
+         OnValueUpdated = delegate { };
       }
 
       ~ElementBinder()

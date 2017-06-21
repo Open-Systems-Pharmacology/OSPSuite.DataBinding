@@ -65,17 +65,25 @@ namespace OSPSuite.DataBinding.Tests
       private string _notifiedNewValue;
       private bool _eventOnValueSet;
       private string _nameOfProperty;
+      private bool _updatedEventRaised;
+      private string _updatedValue;
 
       protected override void Context()
       {
          base.Context();
          _binder.OnValidated += c => { _eventOnValidatedWasCalled = true; };
-         sut.OnValueSet += (o, v) =>
+         sut.OnValueUpdating += (o, v) =>
          {
             _eventOnValueSet = true;
             _nameOfProperty = v.PropertyName;
             _notifiedOldValue = v.OldValue;
             _notifiedNewValue = v.NewValue;
+         };
+
+         sut.OnValueUpdated += (o, e) =>
+         {
+            _updatedEventRaised = true;
+            _updatedValue = e;
          };
 
          _newValue = "toto";
@@ -122,6 +130,13 @@ namespace OSPSuite.DataBinding.Tests
       {
          _notifiedNewValue.ShouldBeEqualTo(_newValue);
       }
+
+      [Observation]
+      public void should_notify_the_updated_event_after_the_value_was_updated_in_the_source()
+      {
+         _updatedEventRaised.ShouldBeTrue();
+         _updatedValue.ShouldBeEqualTo(_newValue);
+      }
    }
 
    public class When_the_text_of_a_bound_text_box_was_set_in_binding_mode_one_ways_with_a_valid_value : concern_for_element_binder_binding_to_string
@@ -129,14 +144,16 @@ namespace OSPSuite.DataBinding.Tests
       private bool _eventOnValidatedWasCalled;
       private string inputText;
       private string _originalValue;
-      private bool _eventOnValueSet;
+      private bool _eventOnValueUpdating;
+      private bool _eventOnValueUpdated;
 
       protected override void Context()
       {
          base.Context();
          _binder.OnValidated += c => { _eventOnValidatedWasCalled = true; };
          _binder.BindingMode = BindingMode.OneWay;
-         sut.OnValueSet += (o, v) => { _eventOnValueSet = true; };
+         sut.OnValueUpdating += (o, v) => { _eventOnValueUpdating = true; };
+         sut.OnValueUpdated += (o, v) => { _eventOnValueUpdated = true; };
          _originalValue = _source.FirstName;
          inputText = "toto";
       }
@@ -161,7 +178,13 @@ namespace OSPSuite.DataBinding.Tests
       [Observation]
       public void should_have_notify_the_value_set_event_to_listener()
       {
-         _eventOnValueSet.ShouldBeTrue();
+         _eventOnValueUpdating.ShouldBeTrue();
+      }
+
+      [Observation]
+      public void should_not_notify_the_on_value_updated_event()
+      {
+         _eventOnValueUpdated.ShouldBeFalse();
       }
    }
 
@@ -240,7 +263,7 @@ namespace OSPSuite.DataBinding.Tests
          base.Context();
          _binder.Changed += () => { _eventOnChangedWasCalled = true; };
          _binder.OnValidationError += (c, e) => { _eventOnErrorValidatingWasCalled = true; };
-         sut.OnValueSet += (o, v) => { _eventOnValueSet = true; };
+         sut.OnValueUpdating += (o, v) => { _eventOnValueSet = true; };
          originalValue = _source.FirstName;
          inputText = string.Empty;
       }

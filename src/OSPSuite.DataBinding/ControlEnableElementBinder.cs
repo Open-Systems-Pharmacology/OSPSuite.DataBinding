@@ -34,10 +34,7 @@ namespace OSPSuite.DataBinding
          return default(TPropertyType);
       }
 
-      public override Control Control
-      {
-         get { return _control; }
-      }
+      public override Control Control => _control;
    }
 
    public class ControlEnableBinder<TObjectType, TPropertyType> : ConversionElementBinder<TObjectType, TPropertyType>, IControlEnableBinder<TObjectType, TPropertyType>
