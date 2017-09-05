@@ -58,8 +58,8 @@ namespace OSPSuite.DataBinding.Tests
       {
          _onChangedFired = 0;
          sut.Changed += () => _onChangedFired++;
-         _element1.Changed += Raise.With<Action>();
-         _element2.Changed += Raise.With<Action>();
+         _element1.Changed += Raise.FreeForm.With();
+         _element2.Changed += Raise.FreeForm.With();
       }
    }
 
