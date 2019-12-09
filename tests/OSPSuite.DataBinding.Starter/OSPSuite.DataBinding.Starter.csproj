@@ -54,8 +54,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OSPSuite.Utility, Version=3.0.1.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OSPSuite.Utility.3.0.1.7\lib\net462\OSPSuite.Utility.dll</HintPath>
+    <Reference Include="OSPSuite.Utility, Version=4.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OSPSuite.Utility.4.0.0.4\lib\netstandard2.0\OSPSuite.Utility.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
