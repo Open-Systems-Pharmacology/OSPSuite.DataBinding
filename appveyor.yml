@@ -1,5 +1,5 @@
 configuration: Debug
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 environment:
   app_version: '3.0.0'
