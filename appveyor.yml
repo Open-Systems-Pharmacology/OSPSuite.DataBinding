@@ -38,7 +38,7 @@ skip_tags: true
 
 branches:
   only:
-  - master
+  - main
   - develop
 
 test:
