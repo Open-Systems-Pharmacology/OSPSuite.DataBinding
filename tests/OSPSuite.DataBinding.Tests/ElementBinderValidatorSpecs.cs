@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Forms;
 using FakeItEasy;
 using OSPSuite.BDDHelper;
 using OSPSuite.BDDHelper.Extensions;
@@ -22,7 +23,8 @@ namespace OSPSuite.DataBinding.Tests
          A.CallTo(() => _elementToValidate.Source).Returns(_source);
          A.CallTo(() => _elementToValidate.PropertyName).Returns("FirstName");
          A.CallTo(() => _elementToValidate.GetValueFromControl()).Returns("Toto");
-         _elementToValidate.ParentBinder = _screenBinder;
+         A.CallTo(() => _elementToValidate.ParentBinder).Returns(_screenBinder);
+         A.CallTo(() => _elementToValidate.Control).Returns(new Label());
 
          _validationEngine = A.Fake<IValidationEngine>();
          sut = new ElementBinderValidator<IAnInterface, string>(_validationEngine);

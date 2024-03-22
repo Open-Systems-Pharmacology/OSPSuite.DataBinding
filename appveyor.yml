@@ -1,19 +1,20 @@
 configuration: Debug
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 environment:
   app_version: '3.0.0'
 
 version: '$(app_version).{build}'
 
-assembly_info:
+dotnet_csproj:
   patch: true
-  file: SolutionInfo.*
-  assembly_version: "{version}"
-  assembly_file_version: "{version}"	
-
+  file: '**\*.csproj'
+  assembly_version: '$(app_version).$(build_number)'
+  file_version: '$(app_version).$(build_number)'
+  informational_version: '$(app_version).$(build_number)'
+  
 cache:
-  packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
+  packages -> **\*.csproj  # preserve "packages" directory in the root of build folder but will reset it if a project file is modified
 
 before_build:
  - nuget sources add -name bddhelper -source https://ci.appveyor.com/nuget/ospsuite-bddhelper 
@@ -22,7 +23,8 @@ before_build:
 
 build:
   publish_nuget: true
-  verbosity: minimal
+  publish_nuget_symbols: true
+  verbosity: detailed
 
 pull_requests: 
   do_not_increment_build_number: true     
@@ -36,7 +38,7 @@ skip_tags: true
 
 branches:
   only:
-  - master
+  - main
   - develop
 
 test:
@@ -46,8 +48,3 @@ test:
 skip_commits:
   files:
     - '*.md'
-
-notifications:
-  - provider: Slack
-    incoming_webhook:      
-      secure: 4MH9Em6TtrKalq6808dhPOqypTfYBJvVlqPaa9akNyF1h7st5qNdNezFp6T+bWXqrcZ4q/smtPcJ7LkUFHL46JDYUFlIL8FDz+ApX/vP+x0=
