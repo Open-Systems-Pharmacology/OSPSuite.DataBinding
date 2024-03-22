@@ -24,7 +24,7 @@ before_build:
 build:
   publish_nuget: true
   publish_nuget_symbols: true
-  verbosity: minimal
+  verbosity: detailed
 
 pull_requests: 
   do_not_increment_build_number: true     
