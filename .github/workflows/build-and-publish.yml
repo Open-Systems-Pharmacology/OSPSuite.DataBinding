@@ -1,0 +1,51 @@
+name: Build and Publish
+
+on:
+  push:
+    branches:
+    - main
+
+env:
+  MAJOR: 3
+  MINOR: 0
+  MINORMINOR: 1 
+  RUN: ${{ github.run_number }}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore dependencies
+        run: |
+          nuget sources add -username Open-Systems-Pharmacology -password ${{ secrets.GITHUB_TOKEN }} -name OSP-GitHub-Packages -source "https://nuget.pkg.github.com/Open-Systems-Pharmacology/index.json"
+          nuget restore
+
+      - name: define env variables
+        run: |
+          echo "APP_VERSION=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.MINORMINOR }}.${{ env.RUN }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Build
+        run: msbuild OSPSuite.DataBinding.sln /p:Version=${{env.APP_VERSION}}
+
+      - name : Test
+        run: dotnet test .\tests\OSPSuite.DataBinding.Tests\bin\Debug\net472\OSPSuite*Tests.dll -v normal --logger:"html;LogFileName=../testLog_Windows.html"
+
+      - name: Pack the project
+        run: dotnet pack .\OSPSuite.DataBinding.sln --no-build --no-restore -o ./ -p:PackageVersion=${{env.APP_VERSION}} --configuration=Debug
+
+      - name: Push test log as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: testLog_Windows
+          path: ./testLog*.html
+
+      - name: Publish to GitHub registry
+        run: dotnet nuget push *.nupkg --source https://nuget.pkg.github.com/${{github.repository_owner}}/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
