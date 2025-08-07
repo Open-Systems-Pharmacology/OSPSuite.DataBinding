@@ -1,5 +1,4 @@
 ﻿using System.Windows.Forms;
-using OSPSuite.DataBinding.Tests;
 
 namespace OSPSuite.DataBinding.Starter
 {
