@@ -1,12 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-  	<IsPackable>false</IsPackable>
-    <TargetFramework>net472</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <StartupObject>OSPSuite.DataBinding.Starter.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs">
@@ -19,6 +22,5 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="OSPSuite.Utility" Version="4.1.1.1" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
 </Project>
