@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OSPSuite.DataBinding.Starter
 {
-    public class Population
+   public class Population
     {
         public Population(string name)
         {
